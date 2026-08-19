@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Signup() {
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -16,6 +18,12 @@ export default function Signup() {
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
+
+    if (!EMAIL_REGEX.test(form.email.trim())) {
+      setError("Please enter a valid email address (e.g. name@example.com).");
+      return;
+    }
+
     setLoading(true);
     try {
       await signup(form);
@@ -46,7 +54,7 @@ export default function Signup() {
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" required value={form.email} onChange={(e) => update("email", e.target.value)} />
+            <input id="email" type="email" required pattern="[^\s@]+@[^\s@]+\.[^\s@]+" title="Enter a valid email address" value={form.email} onChange={(e) => update("email", e.target.value)} />
           </div>
           <div className="field">
             <label htmlFor="city">City</label>

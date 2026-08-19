@@ -7,6 +7,8 @@ const { requireAuth } = require("../middleware/auth");
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function makeToken(user) {
   return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: "30d",
@@ -25,6 +27,9 @@ router.post("/signup", async (req, res) => {
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: "Name, email, and password are all required." });
+    }
+    if (!EMAIL_REGEX.test(email.trim())) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
     }
     if (password.length < 6) {
       return res.status(400).json({ error: "Password must be at least 6 characters." });
